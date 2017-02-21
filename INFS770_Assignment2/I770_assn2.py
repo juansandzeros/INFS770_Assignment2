@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 from sklearn.model_selection import train_test_split
-# 
+# for accuracy and confusion matrix
 from sklearn import metrics
 from sklearn import cross_validation
 
@@ -85,9 +85,9 @@ def fit_naive_bayes(X_train, X_test, y_train, y_test):
     print model.score(X_train, y_train)
 
 # fit logistic regression with cross-validation.
-def fit_logistic_cv(independent_variables, target_variable, cv=5):
+def fit_logistic_cv(X_train, X_test, y_train, y_test, cv=5):
     pred_y=None
-    from sklearn.linear_model import LogisticRegressionCV, LogisticRegression
+    from sklearn.linear_model import LogisticRegressionCV
     '''
     Your code here... Please follow the German credit example.
     First fit the model and obtain pred_y values. You need to figure out how to do 5-fold cross validation.
@@ -105,14 +105,15 @@ def fit_logistic_cv(independent_variables, target_variable, cv=5):
 
     accuracy: 0.788643533123
     '''
-    algorithm = LogisticRegressionCV()
-    lr = LogisticRegression()
+
+    # train model using cross-validation
+    model = LogisticRegressionCV(cv=cv).fit(X_train, y_train)
     # make prediction
-    pred_y = cross_validation.cross_val_predict(lr,independent_variables,target_variable,cv)
+    pred_y = model.predict(X_test)
 
     # evaluate the prediction results
-    print metrics.classification_report(target_variable, pred_y)
-    print metrics.accuracy_score(target_variable, pred_y)
+    print metrics.classification_report(y_test, pred_y)
+    print model.score(X_train, y_train)
 
 def main():
     df = None
@@ -126,7 +127,7 @@ def main():
     fit_naive_bayes(X_train, X_test, y_train, y_test)
     print "----------------------------"
     print "Fit logistic regression with 5-fold cross-validation:"
-    fit_logistic_cv(df[independent_variables], df['class'])
+    fit_logistic_cv(X_train, X_test, y_train, y_test)
     ''' your output should look like the following. Again, the numbers you got may be different because of random sampling
     Fit logististic regression:
              precision    recall  f1-score   support
@@ -160,9 +161,4 @@ def main():
     '''
 if __name__ == '__main__':
     main()
-
-
-
-
-
 
